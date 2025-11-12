@@ -157,6 +157,12 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="buttons.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="buttons.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="Device_Startup\startup_samd21.c">
       <SubType>compile</SubType>
     </Compile>
@@ -164,6 +170,18 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="main.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="pwm.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="pwm.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="speaker.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="speaker.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>
