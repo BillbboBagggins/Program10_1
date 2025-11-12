@@ -7,6 +7,8 @@
 
 #include "sam.h"
 #include "buttons.h"
+#include "speaker.h"
+#include "pwm.h"
 //-----------------------------------------------------------------------------
 //      __   ___  ___         ___  __
 //     |  \ |__  |__  | |\ | |__  /__`
@@ -44,6 +46,9 @@ const float DSHARP4 = 311.127;//Hz
 const float B3 = 247.942;
 const float GSHARP3 = 207.652;
 float sim_notes[4];
+volatile uint8_t this_tone = 0;
+
+
 void init_notes(void) { sim_notes[0] = DSHARP4; 
 						sim_notes[1] = B3; 
 						sim_notes[2] = GSHARP4; 
@@ -72,10 +77,14 @@ int main(void)
     SystemInit();
 	SysTick_Config(48000); 
 	buttons_init();
+	pwm_init();
+	speaker_init();
+	init_notes();
 	
     /* Replace with your application code */
     while (1) 
     {
+		pwm_enable();
 		main_new_time = main_return_millis();
 		//check for buttons here.
 		if((main_new_time - main_old_time) > 20)
@@ -89,13 +98,16 @@ int main(void)
 		{
 			case 0:
 				//keep speaker off. 
+				pwm_disable();
 				break;
 			case 1://S0
 				state_now = s0_pressed;//turn on the right led, play the right note
+				this_tone = sim_notes[0];
 				break;
 				
 			case 2://S1
 				state_now = s1_pressed;//same here . . . 
+				
 				break;
 				
 			case 3://S2
@@ -104,8 +116,37 @@ int main(void)
 				break;
 			case 4://S3
 				state_now = s3_pressed;
+				
 				break;
 		}
+		switch(state_now)
+		{
+			
+			case 0:
+				pwm_disable();
+				this_tone = 0;
+				break;
+			case s0_pressed:
+				
+				this_tone = DSHARP4;
+				break;
+			
+			case s1_pressed:
+				
+				this_tone = sim_notes[1];
+				break;
+		
+			case s2_pressed:
+				
+				this_tone = sim_notes[2];
+				break;
+		
+			case s3_pressed:
+				
+				this_tone = sim_notes[3];
+				break;
+		}
+		pwm_set(this_tone);
 		
 		
     }
@@ -117,6 +158,11 @@ int main(void)
 //     |    |  \ |  \/  /~~\  |  |___
 //
 //-----------------------------------------------------------------------------
+
+
+
+//-----------------------------------------------------------------------------
+
 uint32_t main_return_millis()
 {
 	__disable_irq();
@@ -125,8 +171,9 @@ uint32_t main_return_millis()
 	return return_value;
 }
 
+//-----------------------------------------------------------------------------
 
-void playPause(uint64_t playTime,uint64_t pauseTime)
+void playPause(uint32_t playTime,uint32_t pauseTime)
 {
 	
 	delayPause_newTime = main_return_millis();
