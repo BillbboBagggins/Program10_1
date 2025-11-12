@@ -9,6 +9,12 @@
 #include "buttons.h"
 #include "speaker.h"
 #include "pwm.h"
+#include "timer.h"
+#include "led.h"
+#include "counter.h"
+#include "event.h"
+#include "spi.h"
+
 //-----------------------------------------------------------------------------
 //      __   ___  ___         ___  __
 //     |  \ |__  |__  | |\ | |__  /__`
@@ -56,6 +62,15 @@ void init_notes(void) { sim_notes[0] = DSHARP4;
 
 volatile uint32_t millis;
 volatile uint8_t buttonValue;
+
+//leds
+volatile uint16_t red;
+volatile uint16_t blue;
+volatile uint16_t green;
+
+volatile uint8_t ledNum = 1;
+volatile uint8_t check_blankFlag = 0;
+
 //-----------------------------------------------------------------------------
 //      __   __   __  ___  __  ___      __   ___  __
 //     |__) |__) /  \  |  /  \  |  \ / |__) |__  /__`
@@ -63,6 +78,7 @@ volatile uint8_t buttonValue;
 //
 //-----------------------------------------------------------------------------
 uint32_t main_return_millis();
+void led_always_on();
 //-----------------------------------------------------------------------------
 //      __        __          __
 //     |__) |  | |__) |    | /  `
@@ -80,12 +96,20 @@ int main(void)
 	pwm_init();
 	speaker_init();
 	init_notes();
+	timer_init();
+	counter_init();
+	spi_init();
+	event_init();
+	timer_enable();
+	counter_enable();
+
 	
     /* Replace with your application code */
     while (1) 
     {
 		pwm_enable();
 		main_new_time = main_return_millis();
+		led_always_on();
 		//check for buttons here.
 		if((main_new_time - main_old_time) > 20)
 		{
@@ -102,7 +126,7 @@ int main(void)
 				break;
 			case 1://S0
 				state_now = s0_pressed;//turn on the right led, play the right note
-				this_tone = sim_notes[0];
+				//this_tone = sim_notes[0];
 				break;
 				
 			case 2://S1
@@ -126,24 +150,24 @@ int main(void)
 				pwm_disable();
 				this_tone = 0;
 				break;
-			case s0_pressed:
+			case s0_pressed://green led
+				
+				this_tone = sim_notes[3];
+				break;
+			
+			case s1_pressed://red led
 				
 				this_tone = DSHARP4;
 				break;
-			
-			case s1_pressed:
+		
+			case s2_pressed://yellow led
 				
-				this_tone = sim_notes[1];
+				this_tone = B3;
 				break;
 		
-			case s2_pressed:
+			case s3_pressed:// blue led
 				
-				this_tone = sim_notes[2];
-				break;
-		
-			case s3_pressed:
-				
-				this_tone = sim_notes[3];
+				this_tone = GSHARP3;//sim_notes[2];
 				break;
 		}
 		pwm_set(this_tone);
@@ -158,7 +182,75 @@ int main(void)
 //     |    |  \ |  \/  /~~\  |  |___
 //
 //-----------------------------------------------------------------------------
+void button_state_machineLights()
+{
+	check_blankFlag = counter_get_blankFlag();//check for blank
+	if (!check_blankFlag) return;
+	counter_clear_blank_flag();
+	
+}
+//-----------------------------------------------------------------------------
 
+void led_always_on()
+{
+	check_blankFlag = counter_get_blankFlag();//check for blank
+	if (!check_blankFlag) return;
+	counter_clear_blank_flag();
+	red = 500;
+	green = 500;
+	blue = 500;
+	//pwm_disable();
+	
+		
+	switch(buttonValue)
+	{
+		
+			case 0:
+				led_write(1, 0, 100, 0);
+				led_write(2, 100, 0, 0);
+				led_write(3, 200, 200, 0);
+				led_write(4, 0, 0, 100);
+				break;
+			case 1://green led
+				green = 1500;
+				red = 0;
+				blue = 0;
+				led_write(1, red, green, blue);
+				break;
+			
+			case 2://red led
+				red = 1500;
+				green = 0;
+				blue = 0;
+				led_write(2, red, green, blue);
+				
+				break;
+		
+			case 3://yellow led
+				red = 1500;
+				green = 1500;
+				blue = 0;
+				led_write(3, red, green, blue);
+				
+				this_tone = B3;
+				break;
+		
+			case 4:// blue led
+				red = 0;
+				green = 0;
+				blue = 1500;
+				led_write(4, red, green, blue);
+				
+				this_tone = GSHARP3;//sim_notes[2];
+				break;
+	}
+	
+	
+	
+	
+	
+	spi_write();
+}
 
 
 //-----------------------------------------------------------------------------

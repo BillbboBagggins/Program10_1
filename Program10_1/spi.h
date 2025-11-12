@@ -1,6 +1,6 @@
-#ifndef TIMER_H
-#define TIMER_H
-#include "sam.h"
+#ifndef SPI_H
+#define SPI_H
+
 //------------------------------------------------------------------------------
 //             __             __   ___  __
 //     | |\ | /  ` |    |  | |  \ |__  /__`
@@ -36,10 +36,8 @@
 //
 //------------------------------------------------------------------------------
 
-void timer_init();
-void timer_set_period(uint32_t period);
-void timer_enable();
-void timer_disable();
+uint8_t spi_get_data_sent();
+void spi_clear_data_sent();
 
 //------------------------------------------------------------------------------
 //      __        __          __
@@ -48,5 +46,8 @@ void timer_disable();
 //
 //------------------------------------------------------------------------------
 
-
-#endif /* TIMER_H */
+void spi_init();
+void spi_write();
+uint8_t spi_read();
+uint8_t spi(uint8_t data);
+#endif /* SPI_H */

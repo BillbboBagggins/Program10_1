@@ -1,12 +1,14 @@
-#ifndef TIMER_H
-#define TIMER_H
-#include "sam.h"
+#ifndef COUNTER_H
+#define COUNTER_H
+
 //------------------------------------------------------------------------------
 //             __             __   ___  __
 //     | |\ | /  ` |    |  | |  \ |__  /__`
 //     | | \| \__, |___ \__/ |__/ |___ .__/
 //
 //------------------------------------------------------------------------------
+
+#include "sam.h"
 
 //------------------------------------------------------------------------------
 //      __   ___  ___         ___  __
@@ -36,10 +38,14 @@
 //
 //------------------------------------------------------------------------------
 
-void timer_init();
-void timer_set_period(uint32_t period);
-void timer_enable();
-void timer_disable();
+void counter_init();
+void counter_enable();
+void counter_disable();
+void counter_set(uint32_t value);
+uint8_t counter_get_blankFlag();
+void counter_clear_blank_flag();
+
+
 
 //------------------------------------------------------------------------------
 //      __        __          __
@@ -49,4 +55,4 @@ void timer_disable();
 //------------------------------------------------------------------------------
 
 
-#endif /* TIMER_H */
+#endif /* COUNTER_H */

@@ -57,14 +57,14 @@ void pwm_init()
 	while(GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY);
 
 	// Reset the timer
-	TCC0->CTRLA.reg = TCC_CTRLA_SWRST;
-	while (TCC0->SYNCBUSY.bit.SWRST);
+	//TCC0->CTRLA.reg = TCC_CTRLA_SWRST;
+	//while (TCC0->SYNCBUSY.bit.SWRST);
 	TCC1->CTRLA.reg = TCC_CTRLA_SWRST;
 	while (TCC1->SYNCBUSY.bit.SWRST);
 
-	// LUPD for TCC0
-	TCC0->CTRLBCLR.bit.LUPD = 1;
-	while(TCC0->SYNCBUSY.bit.CTRLB);
+	//// LUPD for TCC0
+	//TCC0->CTRLBCLR.bit.LUPD = 1;
+	//while(TCC0->SYNCBUSY.bit.CTRLB);
 
 	// LUPD for TCC0
 	TCC1->CTRLBCLR.bit.LUPD = 1;
@@ -72,37 +72,37 @@ void pwm_init()
 
 	//set OTMX to allow for CCB
 	// check FAQ
-	TCC0->WEXCTRL.bit.OTMX = 0x1;
+	//TCC0->WEXCTRL.bit.OTMX = 0x1;
 	TCC1->WEXCTRL.bit.OTMX = 0x0;
 
 	// Configure TCC0 into Normal PWM mode
-	TCC0->WAVE.reg = TCC_WAVE_WAVEGEN_NPWM;   // Normal PWM mode on
-	while (TCC0->SYNCBUSY.bit.WAVE);          // Wait for synchronization
+	//TCC0->WAVE.reg = TCC_WAVE_WAVEGEN_NPWM;   // Normal PWM mode on
+	//while (TCC0->SYNCBUSY.bit.WAVE);          // Wait for synchronization
 	TCC1->WAVE.reg = TCC_WAVE_WAVEGEN_NPWM;   // Normal PWM mode on
 	while (TCC1->SYNCBUSY.bit.WAVE);          // Wait for synchronization
+	//
+	//TCC0->PER.reg = 0xFFFF;  // Set period
+	//while (TCC0->SYNCBUSY.bit.PER);
+	//
+	//TCC0->CCB[0].reg = TCC0->PER.reg / 2;      // init to half the period
+	//while (TCC0->SYNCBUSY.bit.CCB0);           // Wait for synchronization
 
-	TCC0->PER.reg = 0xFFFF;  // Set period
-	while (TCC0->SYNCBUSY.bit.PER);
-
-	TCC0->CCB[0].reg = TCC0->PER.reg / 2;      // init to half the period
-	while (TCC0->SYNCBUSY.bit.CCB0);           // Wait for synchronization
-
-	TCC0->CCB[1].reg = TCC0->PER.reg / 2;      // init to half the period
-	while (TCC0->SYNCBUSY.bit.CCB0);
-	TCC0->CCB[2].reg = TCC0->PER.reg / 2;      // init to half the period
-	while (TCC0->SYNCBUSY.bit.CCB0);
-	TCC0->CCB[3].reg = TCC0->PER.reg / 2;      // init to half the period
-	while (TCC0->SYNCBUSY.bit.CCB0);
+	//TCC0->CCB[1].reg = TCC0->PER.reg / 2;      // init to half the period
+	//while (TCC0->SYNCBUSY.bit.CCB0);
+	//TCC0->CCB[2].reg = TCC0->PER.reg / 2;      // init to half the period
+	//while (TCC0->SYNCBUSY.bit.CCB0);
+	//TCC0->CCB[3].reg = TCC0->PER.reg / 2;      // init to half the period
+	//while (TCC0->SYNCBUSY.bit.CCB0);
 
 	TCC1->PER.reg = 0xFFFF;  // Set period
-	while (TCC0->SYNCBUSY.bit.PER);
+	while (TCC1->SYNCBUSY.bit.PER);
 
 	TCC1->CCB[0].reg = TCC1->PER.reg / 2;      // init to half the period
 	while (TCC1->SYNCBUSY.bit.CCB0);           // Wait for synchronization
 
 	// Enable the TCC0 counter
-	TCC0->CTRLA.reg |= TCC_CTRLA_ENABLE;
-	while (TCC0->SYNCBUSY.bit.ENABLE);        // Wait for synchronization
+	//TCC0->CTRLA.reg |= TCC_CTRLA_ENABLE;
+	//while (TCC0->SYNCBUSY.bit.ENABLE);        // Wait for synchronization
 	// Enable the TCC1 counter
 	TCC1->CTRLA.reg |= TCC_CTRLA_ENABLE;
 	while (TCC1->SYNCBUSY.bit.ENABLE);        // Wait for synchronization
@@ -127,8 +127,8 @@ void pwm_init()
 //==============================================================================
 void pwm_enable()
 {
-	TCC0->CTRLA.bit.ENABLE = 1;
-	while (TCC0->SYNCBUSY.bit.ENABLE);
+	//TCC0->CTRLA.bit.ENABLE = 1;
+	//while (TCC0->SYNCBUSY.bit.ENABLE);
 	TCC1->CTRLA.bit.ENABLE = 1;
 	while (TCC1->SYNCBUSY.bit.ENABLE);
 
@@ -136,8 +136,8 @@ void pwm_enable()
 //==============================================================================
 void pwm_disable()
 {
-	TCC0->CTRLA.bit.ENABLE = 0;
-	while (TCC0->SYNCBUSY.bit.ENABLE);
+	//TCC0->CTRLA.bit.ENABLE = 0;
+	//while (TCC0->SYNCBUSY.bit.ENABLE);
 	TCC1->CTRLA.bit.ENABLE = 0;
 	while (TCC1->SYNCBUSY.bit.ENABLE);
 }
@@ -172,9 +172,9 @@ void pwm_disable()
 
 void pwm_set(float freqVal)
 {
-	TCC0 ->PERB.reg = 48000000UL/freqVal;
+	TCC1 ->PERB.reg = 48000000UL/freqVal;
 	
-	TCC1 ->CCB[1].reg =(uint32_t)(48000000UL/(2*freqVal));
+	TCC1 ->CCB[0].reg =(uint32_t)(48000000UL/(2*freqVal));
 	while (TCC1->SYNCBUSY.bit.PER);
 }
 //------------------------------------------------------------------------------
